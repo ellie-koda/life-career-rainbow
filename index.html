@@ -1,0 +1,2140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <title>ライフキャリアレインボー（重要度の割合・Web版）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+.description-list {
+  margin: 1rem 0;
+  padding-left: 1.2rem;
+  list-style: none;
+}
+
+.description-list li {
+  position: relative;
+  margin-bottom: 0.45rem;
+  padding-left: 1.1rem;
+  line-height: 1.7;
+}
+
+/* マーカーを丸にする */
+.description-list li::before {
+  content: "●";
+  position: absolute;
+  left: 0;
+  top: 0.2em;
+  color: #3949ab;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+/* ━━━━━━━━━━━━━━━━━━━━━━━
+   列ハイライト（合計100％/オーバー）
+   ━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* 合計がちょうど100％の列：うっすらグリーン */
+.col-perfect {
+  background-color: #e6f7ec !important;  /* 薄いグリーン */
+}
+
+/* 合計が100％を超えた列：うっすら赤系＋ハッチング */
+.col-over {
+  background-color: #ffecec !important;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 200, 200, 0.45) 0,
+    rgba(255, 200, 200, 0.45) 4px,
+    rgba(255, 255, 255, 0.2) 4px,
+    rgba(255, 255, 255, 0.2) 8px
+  ) !important;
+}
+
+/* 入力欄はハイライトの上でも白を維持して視認性を確保 */
+.col-perfect input[type="number"],
+.col-perfect textarea,
+.col-over input[type="number"],
+.col-over textarea {
+  background-color: #ffffff !important;
+  position: relative;
+  z-index: 1;   /* 背景ハッチングの上に描画されるように */
+}
+/* スマホではさらに読みやすく */
+@media (max-width: 768px) {
+  .description-list li {
+    line-height: 1.9;
+    padding-left: 1.3rem;
+  }
+
+ /* ▼ 現在ヘッダーの年齢入力だけコンパクトにする ▼ */
+  #main-table thead th .age-input {
+    font-size: 13px;        /* ラベルのサイズ（PCとほぼ同じ） */
+    margin-top: 4px;
+    white-space: nowrap;    /* 「年齢：◯◯歳頃」を1行に固定 */
+  }
+
+  #main-table thead th .age-input input[type="number"] {
+    width: 2.4em !important;  /* ★ 2桁＋αギリギリ */
+    font-size: 13px !important;
+    padding: 1px 2px;
+  }
+/* ▼ スマホ時の説明書きをコンパクトにする ▼ */
+@media (max-width: 768px) {
+
+  /* 箇条書き1行の文字サイズを小さく */
+  .description-list li {
+    font-size: 0.78rem;    /* ← ちょうど読みやすい限界ライン */
+    line-height: 1.45;     /* ← 間延び感をなくす */
+    margin-bottom: 0.35rem;
+    padding-left: 1.1rem;  /* マーカーの位置を保ったまま余白を削る */
+  }
+
+  /* 箇条書きのマーカーも少し小さく */
+  .description-list li::before {
+    font-size: 0.6rem;
+    top: 0.25em;
+  }
+
+  /* 説明文全体（ul）自体の上下余白を少し減らす */
+  .description-list {
+    margin: 0.6rem 0 0.8rem 0;
+  }
+
+  /* 章タイトルも少し圧縮 */
+  h2 {
+    margin-top: 0.3rem;
+    margin-bottom: 0.4rem;
+    font-size: 1.1rem;
+  }
+}
+}
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 1.5rem;
+      line-height: 1.6;
+      background: #f3f5ff;
+      color: #333;
+    }
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      border-top: 6px solid #5c6bc0;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #3949ab;
+      margin: 0.5rem 0;
+    }
+h1 {
+  word-break: keep-all;   /* 不自然な位置（ワー｜ク）で折り返さない */
+}
+    .note {
+      font-size: 0.85rem;
+      color: #666;
+    }
+/* レインボー図オーバーレイ内の説明文だけ少し大きく */
+#rainbow-overlay .note {
+  font-size: 0.95rem;  /* 0.85 → 0.95 相当。もっと大きくしたければ 1.0rem でもOK */
+}
+  .table-wrapper {
+  width: 100%;
+  overflow-x: auto;               /* 横スクロールを許可 */
+  -webkit-overflow-scrolling: touch; /* iOSでの慣性スクロール */
+}
+/* ============================================
+   時間軸ヘッダー（20年前〜理想）バランス調整版
+   ============================================ */
+#main-table thead th {
+  padding: 10px 6px;      /* 8 → 10 に少し広げる */
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 1.3;
+}
+
+/* ヘッダー内の（◯歳頃）の見た目を最優先で統一 */
+#main-table thead th .note {
+  display: block;
+  margin: 4px 0 0 0 !important;
+  padding-left: 0 !important;
+  line-height: 1.3;
+  font-size: 13px;
+  color: #555;
+}
+/* ヘッダーの「年齢：◯歳頃」はこの指定を最優先で使う */
+#main-table thead th .age-input {
+  margin-top: 4px !important;
+  font-size: 14px !important;
+}
+
+#main-table thead th .age-input input {
+  font-size: 14px !important;
+  padding: 2px 4px;
+}
+/* ヘッダーセル内のレイアウト用ラッパー */
+.th-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  /* 垂直方向の中央寄せ */
+  align-items: center;      /* 水平方向の中央寄せ */
+  height: 100%;             /* th の高さにフィット */
+}
+
+/* 補足テキスト（◯歳頃） */
+#main-table thead th .note {
+  display: block;
+  margin-top: 4px;         /* 適度な下げ */
+  font-size: 13px;
+  color: #555;
+}
+
+/* 現在の年齢入力欄 */
+#main-table thead th .age-input {
+  margin-top: 6px;         /* 年齢入力欄をやや下げる → 自然な中央位置に！ */
+  font-size: 13px;
+}
+
+/* 左端の「ライフロール」だけ背景を変える */
+#main-table thead th:first-child {
+  background-color: #fafafa;
+}
+
+
+
+/* ライフロール（役割）列の見た目 */
+#main-table thead th:first-child {
+  /* 左端の「ライフロール（役割）」セル */
+  align-items: center;   /* 中央寄せ */
+  background-color: #fafafa;
+}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      table-layout: fixed;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 0.35rem;
+      text-align: center;
+      vertical-align: middle;
+      word-wrap: break-word;
+    }
+    th {
+      background: #e8eaf6;
+    }
+    /* 時間軸列カラー */
+    thead th:nth-child(2),
+    thead th:nth-child(3),
+    thead th:nth-child(4),
+    thead th:nth-child(5),
+    thead th:nth-child(6) {
+      background: #e3f2fd;
+    }
+    tbody td:nth-child(2),
+    tbody td:nth-child(3),
+    tbody td:nth-child(4),
+    tbody td:nth-child(5),
+    tbody td:nth-child(6),
+    tfoot td:nth-child(2),
+    tfoot td:nth-child(3),
+    tfoot td:nth-child(4),
+    tfoot td:nth-child(5),
+    tfoot td:nth-child(6) {
+      background: #fafbff;
+    }
+    /* 理想列強調 */
+    thead th:nth-child(7) {
+      background: #fce4ec;
+      border-left: 3px solid #f06292;
+    }
+    tbody td:nth-child(7),
+    tfoot td:nth-child(7) {
+      background: #fff7fb;
+      border-left: 3px solid #f06292;
+    }
+    /* 左端ライフロール */
+    tbody th {
+      background: #ede7f6;
+      white-space: nowrap;
+    }
+/* ライフロール名＋説明のレイアウト（調整版） */
+/* ライフロール名＋説明のレイアウト（調整版） */
+.role-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;     /* ラベルを中央寄せ */
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.role-name {
+  font-weight: 700;        /* ラベルはしっかり太字で目立たせる */
+  font-size: 0.95rem;
+  margin-bottom: 0.15rem;
+}
+
+.role-desc {
+  font-size: 0.7rem;
+  line-height: 1.4;
+  color: #666;
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  opacity: 0.9;
+  font-weight: normal;     /* ★ ここを明示して細字にする */
+}
+
+/* 印刷用（画像化用）コンテナ内では説明文を隠す（そのままでOK） */
+#print-container .role-desc {
+  display: none !important;
+}
+
+/* スマホ時 */
+@media (max-width: 768px) {
+  .role-name {
+    font-size: 0.9rem;
+  }
+  .role-desc {
+    font-size: 0.64rem;
+    line-height: 1.4;
+    width: 100%;
+    max-width: 100%;
+    font-weight: normal;   /* 念のためモバイル側にも指定 */
+  }
+}
+
+
+    /* ここを書き換え */
+input[type="number"] {
+  width: 2.4em; /* ★ 2桁＋αが入るギリギリくらい */
+  padding: 0.15rem;
+  text-align: right;
+  font-weight: bold;
+}
+
+/* スマホのときはさらに少しだけコンパクトに */
+@media (max-width: 768px) {
+  input[type="number"] {
+    width: 2.2em; /* ★ 2桁用の最小サイズ */
+  }
+}
+    .sum-row {
+      background: #fffde7;
+      font-weight: bold;
+    }
+    .sum-ok {
+      color: #0c8a3b;
+      font-weight: bold;
+    }
+    .sum-warn {
+      color: #c62828;
+      font-weight: bold;
+    }
+    .age-input {
+      font-size: 0.8rem;
+      margin-top: 0.2rem;
+    }
+    .age-input input[type="number"] {
+      width: 4em;
+      font-size: 0.8rem;
+      font-weight: normal;
+    }
+    .cell-content {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 0.25rem;
+    }
+    .percent-block {
+      display: flex;
+      align-items: center;
+      gap: 0.1rem;
+      white-space: nowrap;
+    }
+    .percent-label {
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    .memo-input {
+  flex: 1;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.25rem;
+  box-sizing: border-box;
+  border: 1px solid #e0e0e0;
+  border-radius: 3px;
+  
+  /* ★ ここからが追加・変更ポイント */
+  height: 3.6em;          /* 3行分 */
+  max-height: 3.6em;      /* これ以上伸びない */
+  overflow-y: auto;        /* 4行以上はスクロール */
+  resize: none;            /* 手動でサイズ変更できないように */
+}
+
+@media (max-width: 768px) {
+  .memo-input {
+    height: 3.2em;
+    max-height: 3.2em;
+  }
+}
+    .memo-input::placeholder {
+      color: #d0d0d0;
+    }
+    .memo-active {
+      background-color: #ffffff;
+      border-color: #9e9e9e;
+      color: #333333;
+    }
+    .buttons {
+      margin-top: 1rem;
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    /* ベース：丸くて優しいボタン */
+.btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+/* 画像化ボタン：空色系のグラデ */
+.btn-image {
+  background: linear-gradient(135deg, #6ec6ff, #42a5f5);
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(66,165,245,0.28);
+}
+.btn-image:hover {
+  background: linear-gradient(135deg, #81d4fa, #64b5f6);
+  transform: translateY(-2px);
+}
+
+/* レインボー図ボタン：紫のグラデ */
+.btn-rainbow {
+  background: linear-gradient(135deg, #ba68c8, #8e24aa);
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(142,36,170,0.28);
+}
+
+.btn-rainbow:hover {
+  background: linear-gradient(135deg, #ce93d8, #9c27b0);
+  transform: translateY(-2px);
+}
+
+/* リセットボタンは落ち着いた感じで */
+.btn-reset {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  color: #555;
+}
+.btn-reset:hover {
+  background: #eeeeee;
+  transform: translateY(-2px);
+}
+
+    /* レインボー図オーバーレイ */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .hidden {
+      display: none;
+    }
+   .overlay-content {
+  background: #ffffff;
+  max-width: 960px;
+  width: 95%;
+  max-height: 95vh; /* ★ 85 → 95 にして画面いっぱい近くまで */
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.2rem 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+  overflow: auto;
+  position: relative;           /* ツールチップの基準にするため追加 */
+}
+
+.overlay-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;      /* タイトルを中央寄せ */
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+  position: relative;           /* ×ボタンを右上に絶対配置するため */
+}
+
+.overlay-header h2 {
+  margin: 0;
+  text-align: center;
+}
+
+.btn-close {
+  background: #eeeeee;
+  color: #424242;
+  font-size: 1rem;
+  padding: 0.1rem 0.6rem;
+  position: absolute;           /* 右上に固定 */
+  right: 0.2rem;
+  top: 0.2rem;
+}
+    .btn-close:hover {
+      background: #e0e0e0;
+    }
+    #rainbow-chart {
+      margin-top: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+/* ★ 画像オーバーレイのヘッダーは「右寄せ・通常フロー」 */
+#image-overlay .overlay-header {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;  /* 右寄せ */
+  align-items: center;
+  margin-bottom: 0.4rem;
+  position: static;           /* 特別な absolute 基準にしない */
+}
+
+/* 画像オーバーレイでは、✕ボタンは普通のフローで右端に出す */
+#image-overlay .btn-close {
+  position: static;           /* グローバルの absolute を打ち消す */
+  margin-left: auto;
+}
+
+/* レインボー図キャンバス：画面幅にフィットさせる */
+#rainbow-canvas {
+  flex: 1;                /* ★ 残り高さに自動フィット */
+  width: 100%;
+  height: auto;
+  touch-action: pan-x pan-y;  /* ピンチズームなどの妨げにならないように */
+}
+    .rainbow-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .rainbow-label {
+      width: 5.5em;
+      font-size: 0.85rem;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .rainbow-bar {
+  flex: 1;
+  display: flex;
+  height: 22px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  background: #f5f5f5;
+}
+
+.rainbow-segment {
+  flex: 1;                  /* 5つの時間軸マスを等間隔に */
+  height: 100%;
+  font-size: 0.7rem;
+  color: #ffffff;
+  text-align: center;
+  line-height: 22px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  box-sizing: border-box;
+  border-right: 1px solid #eee;
+}
+
+/* 一番右のマスだけ、右の境界線を消しておくと見た目が綺麗 */
+.rainbow-segment:last-child {
+  border-right: none;
+}
+
+/* 横軸の年齢ラベル用（背景を白っぽくして文字だけ見せる） */
+.rainbow-axis-segment {
+  background: #fafafa !important;
+  color: #555 !important;
+  font-weight: bold;
+}
+    .rainbow-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 0.8rem;
+      margin-top: 0.8rem;
+      font-size: 0.8rem;
+    }
+    .rainbow-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .rainbow-color-box {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    @media (max-width: 768px) {
+  body {
+    margin: 0.5rem;
+  }
+
+/* ★ スマホではタイトルを少し小さめにして1行に収まりやすくする */
+  h1 {
+    font-size: 1.4rem;   /* 通常より少し小さめ */
+    line-height: 1.3;
+  }
+
+  #rainbow-canvas {
+    max-height: 90vh;
+  }
+  .container {
+    padding: 0.6rem;
+  }
+
+  #main-table {
+    min-width: 900px;
+    font-size: 0.8rem;
+  }
+
+  #main-table th,
+  #main-table td {
+    padding: 0.25rem;
+  }
+
+  .cell-content {
+    display: grid;
+    grid-template-columns: auto minmax(5em, 1fr);
+    align-items: stretch;
+    column-gap: 0.25rem;
+  }
+
+  .percent-block {
+    justify-content: flex-start;
+  }
+
+  input[type="number"] {
+    width: 2.2em;
+  }
+
+  .memo-input {
+    width: 100%;
+    min-height: 2.2em;
+    font-size: 0.7rem;
+  }
+
+  #main-table th:first-child,
+  #main-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    background: #ede7f6;
+  }
+
+  /* ★ オーバーレイは「少し小さめ」にして背面の暗い部分を見せる */
+  #rainbow-overlay .overlay-content,
+  #image-overlay .overlay-content {
+    padding: 0.8rem;
+    width: 94vw;          /* 画面よりちょっと小さく */
+    max-width: 94vw;
+    max-height: 88vh;     /* 上下にも余白を残す */
+    margin: 6vh auto;     /* 上下に余白（オーバーレイ感を出す） */
+    border-radius: 8px;
+  }
+
+  .rainbow-label {
+    width: 4.5em;
+    font-size: 0.8rem;
+  }
+}
+
+    
+
+/* 説明文を読みやすい箇条書き風にする（ヘッダーには効かせない） */
+.description-text {
+  display: block;
+  margin: 0.6rem 0;
+  position: relative;
+  padding-left: 1.2em;
+  line-height: 1.6;
+}
+
+
+/* 文頭に見やすいマーカーを自動で追加 */
+/* 説明文だけにマーカーを付ける */
+.description-text {
+  display: block;
+  margin: 0.6rem 0;
+  position: relative;
+  padding-left: 1.2em;
+  line-height: 1.7;
+}
+
+/* 説明文専用のマーカー */
+.description-text::before {
+  content: "●";
+  position: absolute;
+  left: 0;
+  top: 0.2em;
+  color: #3949ab;      /* 見出しと合わせた青紫 */
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+/* スマホで少し行間を広く */
+@media (max-width: 768px) {
+  .description-text {
+    line-height: 1.9;
+    padding-left: 1.4em;
+  }
+}
+
+
+/* スマホ時は少し大きめの行間で読みやすく */
+@media (max-width: 768px) {
+  .note {
+    line-height: 1.8;
+    padding-left: 1.3em;
+  }
+}
+
+/* ==========================
+   名前＋年齢の小さなプロフィール枠
+   ========================== */
+.name-input-wrapper {
+  margin: 0.5rem 0 0.9rem 0;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  background: #fafafa;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.85rem;
+}
+
+/* 1行ごとのラベル（「名前（表示用）：」「現在の年齢：」） */
+.name-input-label {
+  display: flex;          /* テキストと入力欄を横に並べる */
+  align-items: center;
+  gap: 0.4rem;
+  color: #333;
+}
+
+/* 枠の中の入力欄（名前・年齢どちらも） */
+.name-input-label input {
+  margin-left: auto;      /* 入力欄を右端にそろえる */
+  padding: 0.15rem 0.35rem;
+  font-size: 0.85rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 7em;             /* 2つの入力欄を同じ幅にする */
+  box-sizing: border-box;
+}
+
+/* スマホ時は、少しだけコンパクトに */
+@media (max-width: 768px) {
+  .name-input-wrapper {
+    margin: 0.4rem 0 0.8rem 0;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.82rem;
+  }
+
+  .name-input-label {
+    gap: 0.3rem;
+  }
+
+  .name-input-label input {
+    font-size: 0.8rem;
+    width: 6.5em;         /* スマホでは少しだけ短く */
+  }
+}
+
+/* 画像オーバーレイ専用のレイアウト調整 */
+/* ※半円グラフの縦横比はそのまま／画像ははみ出さず最大表示 */
+
+/* 画像オーバーレイ専用のレイアウト調整 */
+#image-overlay .overlay-content {
+  max-width: min(900px, 94vw);   /* PC でもスマホでも「少し小さめ」 */
+  max-height: 88vh;
+  margin: 6vh auto;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;        /* 上：ヘッダー、下：画像 の縦並び */
+  align-items: center;           /* 横方向は中央寄せ */
+  justify-content: flex-start;   /* 上から順に配置 */
+  background: #fff;
+  border-radius: 8px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+
+#image-overlay #captured-image {
+  max-width: 100%;
+  max-height: calc(88vh - 3rem); /* ヘッダー＋余白ぶん差し引き */
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+
+/* 閉じるボタンは右上固定（既存の指定とほぼ同じだが、念のため） */
+#image-overlay .btn-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+}
+
+/* スマホ：幅優先でフィット（比率維持） */
+@media (max-width: 768px) {
+  #captured-image {
+    max-width: 100vw;
+    max-height: 100vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+  }
+}
+
+/* 入力中セルのやさしい淡黄色ハイライト */
+input[type="number"]:focus,
+textarea.memo-input:focus {
+  outline: none;
+  background-color: #fff8d6 !important; /* 淡い黄色 */
+  box-shadow: 0 0 0 2px rgba(255, 227, 115, 0.6) inset; /* やわらかい黄色輪郭 */
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* 現在の縦列を、枠線だけ少し強調して見つけやすくする */
+#main-table thead th:nth-child(4),
+#main-table tbody td:nth-child(4),
+#main-table tfoot td:nth-child(4) {
+  border-left: 2px solid #9fa8da;   /* 少し濃いめの青紫の縦線 */
+  border-right: 2px solid #9fa8da;
+}
+
+
+/* 背景色は「元の色よりほんの少しだけ濃い」トーンに */
+#main-table thead th:nth-child(4) {
+  background-color: #dce7ff;  /* 既存の #e3f2fd よりちょっとだけ濃い */
+}
+
+#main-table tbody td:nth-child(4),
+#main-table tfoot td:nth-child(4) {
+  background-color: #f2f4ff;  /* 既存の #fafbff よりわずかに濃い */
+}
+
+/* PC のときだけ、2つのボタンの横幅を揃える */
+@media (min-width: 769px) {
+  .buttons .btn-image,
+  .buttons .btn-rainbow {
+    min-width: 14.5rem;   /* ★ ここで「大きい方」に合わせる。数値は微調整可 */
+    justify-content: center;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ライフキャリアレインボー<wbr>・ワークシート</h1>
+
+<ul class="description-list">
+  <li>現在の年齢を入れると、各時点の年齢が自動で表示されます。</li>
+  <li>各ライフロール(役割)の重要度(％)を入力してください。</li>
+  <li>縦の列(20年前～理想)の合計がそれぞれ100％になるように調整します。</li>
+  <li>メモ欄にはその時期のできごとやイメージを自由に書いてください。(空欄でもOK)</li>
+  <li>※データはこのブラウザ内だけで使われ、どこにも送信されません。</li>
+</ul>
+
+<!-- ★ 新しい「小さなプロフィール枠」 -->
+<div class="name-input-wrapper">
+  <label class="name-input-label">
+    名前(表示用)：
+    <input id="user-name" type="text" maxlength="40" />
+  </label>
+  <label class="name-input-label">
+    現在の年齢：
+    <input
+      id="age-now"
+      type="number"
+      min="0"
+      max="120"
+      placeholder="例：35"
+    />
+  </label>
+</div>
+
+<h2>ライフロール別の重要度の割合(％)</h2>
+
+    <div class="table-wrapper">
+      <table id="main-table">
+        <thead>
+  <tr>
+    <th>
+      <div class="th-box">
+        ライフロール<br>（役割）
+      </div>
+    </th>
+
+    <th>
+      <div class="th-box">
+        20年前
+        <span class="note">（<span id="age-20ago">-</span>歳頃）</span>
+      </div>
+    </th>
+
+    <th>
+      <div class="th-box">
+        10年前
+        <span class="note">（<span id="age-10ago">-</span>歳頃）</span>
+      </div>
+    </th>
+
+    
+
+<th>
+  <div class="th-box">
+    現在
+    <span class="note">（<span id="age-now-display">-</span>歳）</span>
+  </div>
+</th>
+
+
+
+    <th>
+      <div class="th-box">
+        10年後
+        <span class="note">（<span id="age-10after">-</span>歳頃）</span>
+      </div>
+    </th>
+
+    <th>
+      <div class="th-box">
+        20年後
+        <span class="note">（<span id="age-20after">-</span>歳頃）</span>
+      </div>
+    </th>
+
+    <th>
+      <div class="th-box">
+        理想
+      </div>
+    </th>
+  </tr>
+</thead>
+        <tbody>
+          <!-- 子ども -->
+          <tr>
+            
+  <th>
+    <div class="role-cell">
+      <div class="role-name">子ども</div>
+      <div class="role-desc">
+        子どもとして親と関わる役割。介護なども含む
+      </div>
+    </div>
+  </th>
+
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t20ago" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t10ago" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="now" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t10after" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t20after" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="ideal" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+          </tr>
+          <!-- 学生 -->
+          <tr>
+            
+  <th>
+    <div class="role-cell">
+      <div class="role-name">学生</div>
+      <div class="role-desc">
+        学校・資格取得・研修など
+      </div>
+    </div>
+  </th>
+
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t20ago" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t10ago" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="now" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t10after" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t20after" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="ideal" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+          </tr>
+          <!-- 余暇・趣味 -->
+          <tr>
+            
+  <th>
+    <div class="role-cell">
+      <div class="role-name">余暇・趣味</div>
+      <div class="role-desc">
+        趣味やスポーツ、友人との交流などを楽しむ時間
+      </div>
+    </div>
+  </th>
+
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t20ago" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t10ago" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="now" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t10after" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t20after" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="ideal" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+          </tr>
+          <!-- 地域社会 -->
+          <tr>
+            <th>
+    <div class="role-cell">
+      <div class="role-name">地域社会</div>
+      <div class="role-desc">
+        地域や社会と関わる役割。PTA・ボランティアなども含む
+      </div>
+    </div>
+  </th>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t20ago" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t10ago" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="now" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t10after" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t20after" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="ideal" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+          </tr>
+          <!-- 仕事 -->
+          <tr>
+            <th>
+    <div class="role-cell">
+      <div class="role-name">仕事</div>
+      <div class="role-desc">
+        収入を得る仕事全般。アルバイトなども含む
+      </div>
+    </div>
+  </th>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t20ago" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t10ago" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="now" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t10after" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t20after" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="ideal" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+          </tr>
+          <!-- パートナー -->
+          <tr>
+            <th>
+    <div class="role-cell">
+      <div class="role-name">パートナー</div>
+      <div class="role-desc">
+        配偶者やパートナーと向き合う時間や関係づくり
+      </div>
+    </div>
+  </th>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t20ago" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t10ago" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="now" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t10after" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t20after" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="ideal" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+          </tr>
+          <!-- 家事 -->
+          <tr>
+            <th>
+    <div class="role-cell">
+      <div class="role-name">家事</div>
+      <div class="role-desc">
+        家族が暮らしやすい環境を整える役割
+      </div>
+    </div>
+  </th>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t20ago" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t10ago" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="now" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t10after" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t20after" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="ideal" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+          </tr>
+          <!-- 親 -->
+          <tr>
+            <th>
+    <div class="role-cell">
+      <div class="role-name">親</div>
+      <div class="role-desc">
+        親として子どもと関わる役割
+      </div>
+    </div>
+  </th>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t20ago" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t10ago" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="now" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t10after" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="t20after" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+            <td><div class="cell-content"><div class="percent-block"><input type="number" min="0" max="100" data-time="ideal" /><span class="percent-label">%</span></div><textarea class="memo-input"  placeholder="メモ"></textarea></div></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="sum-row">
+            <th>各時点の合計</th>
+            <td id="sum-t20ago">0%</td>
+            <td id="sum-t10ago">0%</td>
+            <td id="sum-now">0%</td>
+            <td id="sum-t10after">0%</td>
+            <td id="sum-t20after">0%</td>
+            <td id="sum-ideal">0%</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+   <div class="buttons">
+  <button type="button" id="reset-btn" class="btn btn-reset">リセット</button>
+  <!-- 先に画像化ボタン -->
+  
+<button type="button" id="image-btn" class="btn btn-image">
+  <i class="fa-solid fa-image"></i> 入力内容を画像にする
+</button>
+
+  <!-- 後ろにレインボー図ボタン -->
+  
+<button type="button" id="rainbow-btn" class="btn btn-rainbow">
+  <i class="fa-solid fa-rainbow"></i> レインボー図を見る
+</button>
+
+</div>
+  </div>
+
+  <!-- レインボー図オーバーレイ -->
+  <div id="rainbow-overlay" class="overlay hidden">
+    <div class="overlay-content" id="rainbow-wrapper">
+      <div class="overlay-header">
+  <h2>あなたのライフキャリアレインボー🌈</h2>
+  <button type="button" id="rainbow-close" class="btn btn-close">×</button>
+</div>
+<p class="note">
+  各時点の重要度の割合を色の帯で表現しています。<br />
+</p>
+
+<canvas id="rainbow-canvas"></canvas>
+<!-- キャンバス上に重ねるツールチップ -->
+<div id="rainbow-tooltip"></div>
+
+<!-- 既存の凡例コンテナ（使わないのでCSS側で非表示にします） -->
+<div id="rainbow-legend" class="rainbow-legend"></div>
+    </div>
+  </div>
+<!-- 画像表示用オーバーレイ -->
+  <div id="image-overlay" class="overlay hidden">
+    <div class="overlay-content" id="image-overlay-wrapper">
+      <div class="overlay-header">
+        <button type="button" id="image-overlay-close" class="btn btn-close">×</button>
+      </div>
+      <!-- 生成した画像をここに表示 -->
+      <img id="captured-image" src="" alt="ライフキャリアレインボー・ワークシート画像" />
+
+<p style="font-size: 0.75rem; color: #666; margin-top: 0.3rem; text-align: center;">
+  ※長押し/右クリックで画像保存できます
+</p>
+
+    </div>
+  </div>
+
+
+  <!-- 画像化用ライブラリ -->
+<!-- グラフ描画用ライブラリ Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+ <script>
+// 年齢計算
+const ageNowInput = document.getElementById("age-now");
+const age20agoSpan = document.getElementById("age-20ago");
+const age10agoSpan = document.getElementById("age-10ago");
+const age10afterSpan = document.getElementById("age-10after");
+const age20afterSpan = document.getElementById("age-20after");
+
+// ★ 現在の年齢表示用（「現在」の列の（◯歳頃））
+const ageNowSpan = document.getElementById("age-now-display");
+
+
+// 名前入力
+const userNameInput = document.getElementById("user-name");
+
+// トリムした名前を取得（空なら "" を返す）
+function getUserName() {
+  if (!userNameInput) return "";
+  return userNameInput.value.trim();
+}
+
+function updateAges() {
+  const now = Number(ageNowInput.value);
+  if (Number.isFinite(now) && now > 0) {
+    // 20年前〜20年後
+    age20agoSpan.textContent = Math.max(now - 20, 0);
+    age10agoSpan.textContent = Math.max(now - 10, 0);
+    age10afterSpan.textContent = now + 10;
+    age20afterSpan.textContent = now + 20;
+
+    // ★ 現在（年齢）を表示
+    if (ageNowSpan) {
+      ageNowSpan.textContent = now;
+    }
+  } else {
+    age20agoSpan.textContent = "-";
+    age10agoSpan.textContent = "-";
+    age10afterSpan.textContent = "-";
+    age20afterSpan.textContent = "-";
+
+    // ★ 入力が空などのときは「-」に戻す
+    if (ageNowSpan) {
+      ageNowSpan.textContent = "-";
+    }
+  }
+}
+ageNowInput.addEventListener("input", updateAges);
+
+// 合計計算
+const timeKeys = ["t20ago", "t10ago", "now", "t10after", "t20after", "ideal"];
+
+
+function updateSums() {
+  const inputs = document.querySelectorAll(
+    "tbody input[type='number'][data-time]"
+  );
+  const sums = { t20ago: 0, t10ago: 0, now: 0, t10after: 0, t20after: 0, ideal: 0 };
+
+  // 各列（時間軸）の合計を集計
+  inputs.forEach((input) => {
+    const time = input.getAttribute("data-time");
+    const value = Number(input.value);
+    if (Number.isFinite(value)) {
+      sums[time] += value;
+    }
+  });
+
+  // 時間軸ごとにフッターと列ハイライトを更新
+  timeKeys.forEach((key, index) => {
+    const total = sums[key];
+
+    // 1) フッターの表示・OK/WARNクラス
+    const sumCell = document.getElementById("sum-" + key);
+    if (!sumCell) return;
+
+    sumCell.textContent = total + "%";
+    sumCell.classList.remove("sum-ok", "sum-warn");
+
+    if (total === 100) {
+      sumCell.classList.add("sum-ok");
+      sumCell.textContent = total + "%（OK）";
+    } else {
+      sumCell.classList.add("sum-warn");
+    }
+
+    // 2) 対象列のインデックス（1列目：ライフロール、2列目：t20ago…）
+    const colIndex = index + 2; // timeKeys[0] → 2列目, …, timeKeys[5] → 7列目
+
+    // 対象列の thead / tbody / tfoot セルをすべて取得
+    const colCells = document.querySelectorAll(
+      "#main-table thead th:nth-child(" + colIndex + "), " +
+      "#main-table tbody td:nth-child(" + colIndex + "), " +
+      "#main-table tfoot td:nth-child(" + colIndex + ")"
+    );
+
+    // 3) いったん既存のハイライトを外す
+    colCells.forEach((cell) => {
+      cell.classList.remove("col-perfect", "col-over");
+    });
+
+    // 4) 合計値に応じてクラスを付ける
+    if (total === 100) {
+      colCells.forEach((cell) => cell.classList.add("col-perfect"));
+    } else if (total > 100) {
+      colCells.forEach((cell) => cell.classList.add("col-over"));
+    }
+    // 100未満のときは何も付けない（通常色）
+  });
+}
+
+
+document.addEventListener("input", (e) => {
+  if (e.target.matches("tbody input[type='number'][data-time]")) {
+    updateSums();
+  }
+});
+
+// メモの見た目
+function updateMemoAppearance(input) {
+  if (input.value && input.value.trim().length > 0) {
+    input.classList.add("memo-active");
+  } else {
+    input.classList.remove("memo-active");
+  }
+}
+
+function autoResizeMemo(el) {
+  // 高さは固定する（スクロールに任せる）
+  el.style.height = el.style.maxHeight;
+}
+
+const memoInputs = document.querySelectorAll(".memo-input");
+memoInputs.forEach((input) => {
+  // 初期表示
+  updateMemoAppearance(input);
+  autoResizeMemo(input);
+
+  // 入力中：色を変えつつ高さも合わせる
+  input.addEventListener("input", () => {
+    updateMemoAppearance(input);
+    autoResizeMemo(input);
+  });
+
+  // フォーカス時：とりあえず全文が見える高さに
+  input.addEventListener("focus", () => {
+    autoResizeMemo(input);
+  });
+
+  // フォーカスが外れたとき
+  input.addEventListener("blur", () => {
+    updateMemoAppearance(input);
+    if (!input.value.trim()) {
+      // 未入力の場合は最小サイズまで戻す
+      input.style.height = "";
+    }
+  });
+});
+
+// リセット
+const resetBtn = document.getElementById("reset-btn");
+resetBtn.addEventListener("click", () => {
+  ageNowInput.value = "";
+  updateAges();
+
+  document
+    .querySelectorAll("tbody input[type='number'][data-time]")
+    .forEach((input) => {
+      input.value = "";
+    });
+
+  memoInputs.forEach((input) => {
+    input.value = "";
+    updateMemoAppearance(input);
+  input.style.height = ""; // ★ 高さも初期状態に
+  });
+
+  updateSums();
+});
+
+// HTMLエスケープ
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// メモを「改行有効」で整形してHTML文字列にする（制限なし版）
+function formatMemoForHtml(memoText) {
+  if (!memoText) return "";
+
+  // 全文をエスケープし、改行だけ <br> に置き換える
+  return escapeHtml(memoText).replace(/\r?\n/g, "<br>");
+}
+
+// 画像化ボタン
+const imageBtn = document.getElementById("image-btn");
+imageBtn.addEventListener("click", function () {
+  const mainTable = document.getElementById("main-table");
+
+  const printContainer = document.createElement("div");
+　printContainer.id = "print-container";   // ★ この1行を追加
+  printContainer.style.position = "fixed";
+  printContainer.style.left = "-9999px";
+  printContainer.style.top = "0";
+  printContainer.style.width = "900px"; // 少し細めに
+  printContainer.style.backgroundColor = "#ffffff";
+  printContainer.style.padding = "5";
+  printContainer.style.boxSizing = "border-box";
+  document.body.appendChild(printContainer);
+
+  const title = document.createElement("h1");
+const userName = getUserName();
+
+title.textContent = userName
+  ? userName + "のライフキャリアレインボー・ワークシート"
+  : "ライフキャリアレインボー・ワークシート";
+
+title.style.textAlign = "center";
+title.style.color = "#3949ab";
+printContainer.appendChild(title);
+
+  const h2 = document.createElement("h2");
+  h2.textContent = "ライフロール別の重要度の割合（％）";
+  h2.style.textAlign = "center";
+  h2.style.color = "#3949ab";
+  h2.style.marginTop = "10px";
+  printContainer.appendChild(h2);
+
+  const printTable = document.createElement("table");
+  printTable.style.width = "100%";
+  printTable.style.borderCollapse = "collapse";
+  printTable.style.marginTop = "10px";
+  printContainer.appendChild(printTable);
+
+
+  // thead
+  const origThead = mainTable.tHead;
+  if (origThead) {
+    const newThead = document.createElement("thead");
+    const origHeadRow = origThead.rows[0];
+    const newHeadRow = document.createElement("tr");
+
+    for (let i = 0; i < origHeadRow.cells.length; i++) {
+      const cell = origHeadRow.cells[i];
+      const th = document.createElement("th");
+
+      if (i === 0) {
+        // 1列目だけ、明示的に改行を入れる
+        th.innerHTML = "ライフロール<br>（役割）";
+      } else {
+
+// 時点セル（2列目〜6列目）は強制2行に整形する
+if (i > 0 && i <= 5) {  
+  const parts = cell.textContent.trim().split("（");
+  const title = parts[0];                  // 「20年前」
+  const age   = parts[1] ? "（" + parts[1] : "";  // 「（○歳頃）」
+
+  th.innerHTML = title + "<br>" + age;
+} else {
+  th.innerHTML = cell.innerHTML; // ライフロール列や理想列はそのまま
+}
+
+      }
+
+      th.style.border = "1px solid #ddd";
+      th.style.padding = "2px 4px";
+      th.style.backgroundColor = "#e8eaf6";
+      th.style.verticalAlign = "middle";
+      newHeadRow.appendChild(th);
+    }
+    newThead.appendChild(newHeadRow);
+    printTable.appendChild(newThead);
+  }
+
+  // tbody
+const origTbody = mainTable.tBodies[0];
+const newTbody = document.createElement("tbody");
+
+for (let r = 0; r < origTbody.rows.length; r++) {
+  const origRow = origTbody.rows[r];
+  const newRow = document.createElement("tr");
+
+  for (let c = 0; c < origRow.cells.length; c++) {
+    const origCell = origRow.cells[c];
+    let newCell;
+
+    if (origCell.tagName === "TH") {
+      // ★ ライフロール名だけ取得（説明は含めない）
+      newCell = document.createElement("th");
+
+      const nameEl = origCell.querySelector(".role-name");
+      const roleName = nameEl
+        ? nameEl.textContent.trim()
+        : origCell.textContent.trim(); // 念のためフォールバック
+
+      newCell.textContent = roleName;
+      newCell.style.backgroundColor = "#ede7f6";
+      newCell.style.verticalAlign = "middle";
+    } else {
+      // パーセント＋メモ（既存の処理）
+      newCell = document.createElement("td");
+
+      const input = origCell.querySelector("input[type='number']");
+      const textarea = origCell.querySelector("textarea");
+
+      const rawValue =
+        input && input.value !== "" ? Number(input.value) : null;
+
+      const percentText =
+        rawValue !== null ? rawValue + "％" : "";
+      const memoText =
+        textarea && textarea.value ? textarea.value : "";
+
+      let html = "";
+
+      if (percentText || memoText) {
+        const formattedMemo = formatMemoForHtml(memoText);
+
+        html +=
+          "<div style='display:flex; align-items:center; " +
+          "justify-content:space-between; gap:6px; width:100%;'>";
+
+        html +=
+          "<div style='font-weight:bold; white-space:nowrap; text-align:right; min-width:2em;'>" +
+          escapeHtml(percentText || "") +
+          "</div>";
+
+        html +=
+          "<div style='font-size:0.7em; line-height:1.3; text-align:left; flex:1;'>" +
+          (formattedMemo || "") +
+          "</div>";
+
+        html += "</div>";
+      }
+
+      newCell.innerHTML = html;
+      newCell.style.verticalAlign = "middle";
+
+      if (rawValue !== null && rawValue >= 20) {
+        newCell.style.backgroundImage =
+          "repeating-linear-gradient(-45deg," +
+          " rgba(255, 220, 220, 0.9) 0," +
+          " rgba(255, 220, 220, 0.9) 4px," +
+          " rgba(255, 255, 255, 0.9) 4px," +
+          " rgba(255, 255, 255, 0.9) 8px)";
+        newCell.style.backgroundColor = "#fff5f5";
+      }
+    }
+
+    newCell.style.border = "1px solid #ddd";
+    newCell.style.padding = "2px 4px";
+    newRow.appendChild(newCell);
+  }
+
+  newTbody.appendChild(newRow);
+}
+
+printTable.appendChild(newTbody);
+
+  // tfoot
+  const origTfoot = mainTable.tFoot;
+  if (origTfoot) {
+    const newTfoot = document.createElement("tfoot");
+    for (let r = 0; r < origTfoot.rows.length; r++) {
+      const origRow = origTfoot.rows[r];
+      const newRow = document.createElement("tr");
+      for (let c = 0; c < origRow.cells.length; c++) {
+        const origCell = origRow.cells[c];
+        const td = document.createElement("td");
+        td.textContent = origCell.textContent.trim();
+        td.style.border = "1px solid #ddd";
+        td.style.padding = "2px 4px";
+        td.style.fontWeight = "bold";
+        td.style.backgroundColor = "#fffde7";
+        newRow.appendChild(td);
+      }
+      newTfoot.appendChild(newRow);
+    }
+    printTable.appendChild(newTfoot);
+  }
+
+// html2canvas で画像化
+  html2canvas(printContainer, {
+    scale: 2,
+    backgroundColor: "#ffffff",
+    useCORS: true
+  })
+    .then(function (canvas) {
+      const imgData = canvas.toDataURL("image/png");
+
+      // 一時コンテナを削除
+      document.body.removeChild(printContainer);
+
+      // ★ ページ内オーバーレイに画像を表示する
+      const imageOverlay = document.getElementById("image-overlay");
+      const capturedImage = document.getElementById("captured-image");
+
+      if (imageOverlay && capturedImage) {
+        capturedImage.src = imgData;
+        imageOverlay.classList.remove("hidden");
+      } else {
+        // 万一要素が取得できなかった場合は、とりあえず新しいタブで開くフォールバック
+        const win = window.open("");
+        if (win) {
+          win.document.write(
+            "<!DOCTYPE html><html><head>" +
+              "<meta charset='UTF-8' />" +
+              "<meta name='viewport' content='width=device-width, initial-scale=1, viewport-fit=cover' />" +
+              "<title>ライフキャリアレインボー（画像）</title>" +
+              "<style>" +
+                "html,body{margin:0;padding:0;background:#ffffff;width:100%;height:100%;}" +
+                "body{display:flex;justify-content:center;align-items:center;}" +
+                "img{display:block;width:100vw;max-width:100vw;height:auto;}" +
+              "</style>" +
+            "</head><body>" +
+              "<img src='" + imgData + "' alt='ライフキャリアレインボー・ワークシート' />" +
+            "</body></html>"
+          );
+          win.document.close();
+        }
+      }
+    })
+    .catch(function (err) {
+      alert("画像の作成中にエラーが発生しました。別のブラウザでもお試しください。");
+      console.error(err);
+      document.body.removeChild(printContainer);
+    });
+});
+
+
+
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+// 画像オーバーレイ共通の閉じる処理（ここから）
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+const imageOverlay = document.getElementById("image-overlay");
+const imageOverlayClose = document.getElementById("image-overlay-close");
+
+if (imageOverlay && imageOverlayClose) {
+  // ×ボタンで閉じる
+  imageOverlayClose.addEventListener("click", function () {
+    imageOverlay.classList.add("hidden");
+  });
+
+  // 背景クリックで閉じる
+  imageOverlay.addEventListener("click", function (e) {
+    if (e.target === imageOverlay) {
+      imageOverlay.classList.add("hidden");
+    }
+  });
+}
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+// 画像オーバーレイ共通の閉じる処理（ここまで）
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+
+// ライフロール（行）の名前を取得（ラベルのみ）
+function getRoleNames() {
+  const tbody = document.querySelector("#main-table tbody");
+  const rows = Array.from(tbody.rows);
+
+  return rows.map((row) => {
+    const nameEl = row.querySelector(".role-name");
+    // .role-name が見つかればそのテキストだけを返す
+    if (nameEl) {
+      return nameEl.textContent.trim();
+    }
+    // 念のためのフォールバック（古い構造の場合）
+    return row.cells[0].textContent.trim();
+  });
+}
+
+
+// 20年前〜20年後の5点分のラベルとキー
+function getTimeInfosWithAge() {
+  const now = parseFloat(ageNowInput.value);
+  if (!isNaN(now) && now > 0) {
+    return [
+      { key: "t20ago", label: Math.max(now - 20, 0) + "歳頃" },
+      { key: "t10ago", label: Math.max(now - 10, 0) + "歳頃" },
+      { key: "now", label: "現在 " + now + "歳" },
+      { key: "t10after", label: now + 10 + "歳頃" },
+      { key: "t20after", label: now + 20 + "歳頃" }
+    ];
+  } else {
+    return [
+      { key: "t20ago", label: "−20年" },
+      { key: "t10ago", label: "−10年" },
+      { key: "now", label: "現在" },
+      { key: "t10after", label: "+10年" },
+      { key: "t20after", label: "+20年" }
+    ];
+  }
+}
+
+// ===== 半円レインボー図（カスタム描画） =====
+const rainbowBtn = document.getElementById("rainbow-btn");
+const rainbowOverlay = document.getElementById("rainbow-overlay");
+const rainbowCloseBtn = document.getElementById("rainbow-close");
+const rainbowCanvas = document.getElementById("rainbow-canvas");
+const rainbowLegendDiv = document.getElementById("rainbow-legend");
+
+
+// targetCanvas が指定されていればそこに描画、なければ通常の rainbowCanvas に描く
+
+function buildRainbowChart(targetCanvas) {
+  const canvas = targetCanvas || rainbowCanvas;
+  if (!canvas) return;
+
+  const dpr = window.devicePixelRatio || 1;
+
+  // ▼ 追加：キャンバスの親要素の幅を優先的に使う
+  const parent = canvas.parentElement;
+  const parentWidth = parent
+    ? parent.clientWidth || parent.getBoundingClientRect().width
+    : 0;
+
+  const viewportWidth =
+    window.innerWidth || document.documentElement.clientWidth || 600;
+  const viewportHeight =
+    window.innerHeight || document.documentElement.clientHeight || 600;
+
+  // 「画面幅」と「親要素の幅」のうち、信頼できるほうを採用
+  // ・通常表示：親要素 ≒ 画面幅 → 自然に決まる
+  // ・画像用コンテナ：親要素 = 900px → そちらが優先される
+  const baseWidth = parentWidth > 0 ? parentWidth : viewportWidth;
+
+  const isMobile = baseWidth <= 768;
+
+  // 横方向はコンテナ幅をほぼいっぱい使う
+  const width = Math.min(960, baseWidth * (isMobile ? 0.98 : 0.95));
+
+  // 縦方向は横幅ベースで決める（ブラウザ高さに引きずられないように）
+  const targetHeightRatio = isMobile ? 0.7 : 0.55;
+  const height = width * targetHeightRatio;
+
+  // 上の余白とラベル用余白を少し控えめにして、円を大きく
+  const marginTop = isMobile ? 30 : 35;
+  const labelMargin = isMobile ? 40 : 35;
+
+  const maxRByWidth = width / 2 - 16;
+  const maxRByHeight = height - marginTop - labelMargin - 16;
+  const outerR = Math.min(maxRByWidth, maxRByHeight);
+  const innerR = outerR * 0.25;
+
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  canvas.style.width = width + "px";
+  canvas.style.height = height + "px";
+
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+
+// 中心位置
+const centerX = width / 2;
+const centerY = outerR + marginTop;
+
+  const tbody = document.querySelector("#main-table tbody");
+  const rows = Array.from(tbody.rows);
+  const roleNames = getRoleNames();
+  const timeInfos = getTimeInfosWithAge();
+  const timeCount = timeInfos.length;
+  const roleCount = roleNames.length;
+
+  const angles = [];
+  for (let i = 0; i < timeCount; i++) {
+    const t = timeCount === 1 ? 0 : i / (timeCount - 1);
+    angles.push(-Math.PI + Math.PI * t);
+  }
+
+  const roleColors = [
+    "#FF6F91", // 子ども
+    "#FF9E6B", // 学生
+    "#FFD66B", // 余暇・趣味
+    "#A5D76E", // 地域社会
+    "#6ED4FF", // 仕事
+    "#7F8CFF", // パートナー
+    "#CFA0FF", // 家事
+    "#FFB7CF"  // 親
+  ];
+
+  const values = rows.map((row) =>
+    timeInfos.map((info) => {
+      const input = row.querySelector(
+        "input[type='number'][data-time='" + info.key + "']"
+      );
+      const v = input && input.value ? Number(input.value) : 0;
+      return Math.max(v, 0);
+    })
+  );
+
+  function radiusFromPerc(p) {
+    const clamped = Math.max(0, Math.min(100, p));
+    const ratio = clamped / 100;
+    return innerR + (outerR - innerR) * ratio;
+  }
+
+  const lowerPerc = [];
+  const upperPerc = [];
+  for (let r = 0; r < roleCount; r++) {
+    lowerPerc[r] = new Array(timeCount).fill(0);
+    upperPerc[r] = new Array(timeCount).fill(0);
+  }
+
+  for (let tIdx = 0; tIdx < timeCount; tIdx++) {
+    let cum = 0;
+    for (let rIdx = 0; rIdx < roleCount; rIdx++) {
+      lowerPerc[rIdx][tIdx] = cum;
+      const v = values[rIdx][tIdx] || 0;
+      cum += v;
+      upperPerc[rIdx][tIdx] = cum;
+    }
+  }
+
+  const stepsPerSegment = 40;
+
+  for (let roleIndex = 0; roleIndex < roleCount; roleIndex++) {
+    const color = roleColors[roleIndex % roleColors.length];
+
+    const smoothAngles = [];
+    const smoothLower = [];
+    const smoothUpper = [];
+
+    for (let j = 0; j < timeCount - 1; j++) {
+      for (let s = 0; s < stepsPerSegment; s++) {
+        const tt = s / stepsPerSegment;
+        const ang = angles[j] * (1 - tt) + angles[j + 1] * tt;
+        const low =
+          lowerPerc[roleIndex][j] +
+          (lowerPerc[roleIndex][j + 1] - lowerPerc[roleIndex][j]) * tt;
+        const up =
+          upperPerc[roleIndex][j] +
+          (upperPerc[roleIndex][j + 1] - upperPerc[roleIndex][j]) * tt;
+
+        smoothAngles.push(ang);
+        smoothLower.push(low);
+        smoothUpper.push(up);
+      }
+    }
+
+    smoothAngles.push(angles[timeCount - 1]);
+    smoothLower.push(lowerPerc[roleIndex][timeCount - 1]);
+    smoothUpper.push(upperPerc[roleIndex][timeCount - 1]);
+
+    ctx.beginPath();
+    for (let k = 0; k < smoothAngles.length; k++) {
+      const angOuter = smoothAngles[k];
+      const rOuter = radiusFromPerc(smoothUpper[k]);
+      const xOuter = centerX + rOuter * Math.cos(angOuter);
+      const yOuter = centerY + rOuter * Math.sin(angOuter);
+      if (k === 0) ctx.moveTo(xOuter, yOuter);
+      else ctx.lineTo(xOuter, yOuter);
+    }
+    for (let k2 = smoothAngles.length - 1; k2 >= 0; k2--) {
+      const angInner = smoothAngles[k2];
+      const rInner = radiusFromPerc(smoothLower[k2]);
+      const xInner = centerX + rInner * Math.cos(angInner);
+      const yInner = centerY + rInner * Math.sin(angInner);
+      ctx.lineTo(xInner, yInner);
+    }
+    ctx.closePath();
+
+    ctx.fillStyle = color + "E6";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.8)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, outerR, -Math.PI, 0);
+  ctx.strokeStyle = "rgba(0,0,0,0.25)";
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+// --- 年齢ラベル（角度つき配置：半円に沿わせる） ---
+const labelFontPx = isMobile ? 12 : 16;
+
+ctx.font =
+  labelFontPx +
+  "px system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+ctx.fillStyle = "#333";
+ctx.textBaseline = "middle";
+ctx.textAlign = "center";
+
+// ★ ラベルの角度（あなたの希望に合わせた値）
+const labelAnglesDeg = [-88, -45, 0, 45, 88];  // 20年前〜20年後の5点
+
+// ★ テキストを置く半径（やや内側＝見切れにくい）
+// ★ 半円から1〜2ポイントだけ外へ離す（最終調整）
+const labelRadius = outerR + (isMobile ? 7 : 9);
+
+for (let i = 0; i < timeCount; i++) {
+  let angleRad = angles[i];
+
+  // ラベル位置の座標（回転前）
+  let x = centerX + labelRadius * Math.cos(angleRad);
+  let y = centerY + labelRadius * Math.sin(angleRad);
+
+  // ラベル回転角度のラジアン
+  let rotateRad = (labelAnglesDeg[i] * Math.PI) / 180;
+
+  ctx.save();           // Canvas 状態を保存
+  ctx.translate(x, y);  // 原点をラベル位置へ移動
+  ctx.rotate(rotateRad);// 指定角度ぶんCanvasを回転
+  ctx.fillText(timeInfos[i].label, 0, 0);  // 原点に描画（回転後座標）
+  ctx.restore();        // 状態を元に戻す（必須）
+}
+
+
+
+
+// ─────────────────────────────
+// ラベル表示用のインデックス準備（最大値の時間軸にラベル）
+// ─────────────────────────────
+const timeIndexByKey = {};
+timeInfos.forEach((info, idx) => {
+  timeIndexByKey[info.key] = idx;
+});
+
+// 各時点（5つ）に対応するキー順
+const timeKeysForLabel = ["t20ago", "t10ago", "now", "t10after", "t20after"];
+
+// 角度（labels を置く角度は各時点の角度）
+const angleByTime = {};
+timeKeysForLabel.forEach((k, i) => {
+  angleByTime[k] = angles[i];
+});
+
+// ★ フォント設定
+const roleFontPx = isMobile ? 11 : 14; 
+ctx.font =
+  roleFontPx +
+  "px system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+ctx.fillStyle = "#111";
+ctx.textBaseline = "middle";
+ctx.textAlign = "center";
+
+// 時点ごとのラベル配置用の角度ズラし（重なり対策）
+const angleShiftDeg = 4;
+const angleShift = (Math.PI / 180) * angleShiftDeg;
+
+
+// ─────────────────────────────
+// ロールごとに「最も割合が大きい時点」を探し、その帯の中心にラベル
+// ─────────────────────────────
+for (let rIdx = 0; rIdx < roleCount; rIdx++) {
+  const rowValues = values[rIdx]; // [t20, t10, now, t10after, t20after]
+
+  // 最大値の位置（どの時点で一番割合が大きいか）
+  let maxVal = -1;
+  let maxIndex = -1;
+
+  for (let t = 0; t < timeKeysForLabel.length; t++) {
+    const v = rowValues[t];
+    if (v > maxVal) {
+      maxVal = v;
+      maxIndex = t;
+    }
+  }
+
+  // すべて 0％ならラベルは表示しない
+  if (maxVal <= 0) continue;
+
+  const timeKey = timeKeysForLabel[maxIndex];
+
+  // =================================================
+  // ① 角度：20年前／20年後だけ、10年前／10年後側に少し寄せる
+  // =================================================
+  let baseAngle;   // この後で labelAngle としてそのまま使う
+  let low;         // 帯の下端（％の累積）
+  let up;          // 帯の上端（％の累積）
+
+  // どのくらい「隣の時点」に寄せるか（0〜1）
+  // 0.0 なら元のまま、0.5 なら完全な中間
+  const edgeShiftRatio = 0.25;   // ← 25% だけ隣の時点寄り（お好みで 0.2〜0.3 程度）
+
+  if (timeKey === "t20ago") {
+    // index 0: 20年前, index 1: 10年前
+    const idxA = 0;  // 20年前
+    const idxB = 1;  // 10年前
+    const wA = 1 - edgeShiftRatio;
+    const wB = edgeShiftRatio;
+
+    // 角度も、上下の位置も「20年前」と「10年前」の間に補間する
+    baseAngle = angles[idxA] * wA + angles[idxB] * wB;
+    low       = lowerPerc[rIdx][idxA] * wA + lowerPerc[rIdx][idxB] * wB;
+    up        = upperPerc[rIdx][idxA] * wA + upperPerc[rIdx][idxB] * wB;
+
+  } else if (timeKey === "t20after") {
+    // 最後の index: 20年後, その一つ前: 10年後
+    const idxA = timeCount - 1;   // 20年後
+    const idxB = timeCount - 2;   // 10年後
+    const wA = 1 - edgeShiftRatio;
+    const wB = edgeShiftRatio;
+
+    baseAngle = angles[idxA] * wA + angles[idxB] * wB;
+    low       = lowerPerc[rIdx][idxA] * wA + lowerPerc[rIdx][idxB] * wB;
+    up        = upperPerc[rIdx][idxA] * wA + upperPerc[rIdx][idxB] * wB;
+
+  } else {
+    // それ以外（10年前／現在／10年後）は、元の位置そのまま
+    baseAngle = angleByTime[timeKey];
+    low       = lowerPerc[rIdx][maxIndex];
+    up        = upperPerc[rIdx][maxIndex];
+  }
+
+  // =================================================
+  // ② 半径：帯の「上下の真ん中」（センタリング）
+  // =================================================
+  const midPerc = (low + up) / 2;
+  const radius  = radiusFromPerc(midPerc);
+
+  // 角度は baseAngle のまま（重なり防止のズラしはしない）
+  const labelAngle = baseAngle;
+
+  const x = centerX + radius * Math.cos(labelAngle);
+  const y = centerY + radius * Math.sin(labelAngle);
+
+  ctx.fillText(roleNames[rIdx], x, y);
+}
+
+// ─────────────────────────────
+// 凡例を更新（全ロールを表示）
+// ─────────────────────────────
+if (rainbowLegendDiv) {
+  rainbowLegendDiv.innerHTML = "";
+
+  for (let i = 0; i < roleCount; i++) {
+    const item = document.createElement("div");
+    item.className = "rainbow-legend-item";
+
+    const colorBox = document.createElement("span");
+    colorBox.className = "rainbow-color-box";
+    colorBox.style.backgroundColor = roleColors[i % roleColors.length];
+
+    const label = document.createElement("span");
+    label.textContent = roleNames[i];
+
+    item.appendChild(colorBox);
+    item.appendChild(label);
+    rainbowLegendDiv.appendChild(item);
+  }
+}
+}
+ // ← ここで buildRainbowChart 関数が終わる
+
+// 「レインボー図を見る」ボタン → レインボー図を画像化して表示
+if (rainbowBtn) {
+  rainbowBtn.addEventListener("click", function () {
+    // 1. 画面外にレインボー図用のコンテナを作成
+    const captureContainer = document.createElement("div");
+    captureContainer.style.position = "fixed";
+    captureContainer.style.left = "-9999px";
+    captureContainer.style.top = "0";
+    captureContainer.style.width = "900px";
+    captureContainer.style.backgroundColor = "#ffffff";
+    captureContainer.style.padding = "5";
+    captureContainer.style.boxSizing = "border-box";
+    document.body.appendChild(captureContainer);
+
+    // タイトル
+const title = document.createElement("h2");
+const userNameForRainbow = getUserName();
+
+title.textContent = userNameForRainbow
+  ? userNameForRainbow + "のライフキャリアレインボー🌈"
+  : "あなたのライフキャリアレインボー🌈";
+
+title.style.textAlign = "center";
+title.style.color = "#3949ab";
+captureContainer.appendChild(title);
+
+    // 説明（元の note と揃える）
+    const note = document.createElement("p");
+    note.textContent = "各時点の重要度の割合を色の帯で表現しています。";
+    note.style.fontSize = "0.85rem";
+    note.style.color = "#666";
+    note.style.textAlign = "center";
+    note.style.marginTop = "4px";
+    captureContainer.appendChild(note);
+
+    // レインボー図用のキャンバス（ここに半円チャートを描く）
+    const rainbowImageCanvas = document.createElement("canvas");
+    captureContainer.appendChild(rainbowImageCanvas);
+
+    // 2. このキャンバスにレインボー図を描画（既存関数を再利用）
+    buildRainbowChart(rainbowImageCanvas);
+
+    // 3. コンテナ全体を html2canvas で画像化
+    html2canvas(captureContainer, {
+      scale: 2,
+      backgroundColor: "#ffffff",
+      useCORS: true
+    })
+      .then(function (canvas) {
+        const imgData = canvas.toDataURL("image/png");
+
+        // 一時コンテナを削除
+        document.body.removeChild(captureContainer);
+
+        // 4. 既存の画像オーバーレイに表示（入力フォーム画像と同じ仕組み）
+        const imageOverlay = document.getElementById("image-overlay");
+        const capturedImage = document.getElementById("captured-image");
+
+        if (imageOverlay && capturedImage) {
+          capturedImage.src = imgData;
+          imageOverlay.classList.remove("hidden");
+        } else {
+          // 万一取得できなかった場合のフォールバック：別タブで表示
+          const win = window.open("");
+          if (win) {
+            win.document.write(
+              "<!DOCTYPE html><html><head>" +
+                "<meta charset='UTF-8' />" +
+                "<meta name='viewport' content='width=device-width, initial-scale=1, viewport-fit=cover' />" +
+                "<title>あなたのライフキャリアレインボー（画像）</title>" +
+                "<style>" +
+                  "html,body{margin:0;padding:0;background:#ffffff;width:100%;height:100%;}" +
+                  "body{display:flex;justify-content:center;align-items:center;}" +
+                  "img{display:block;width:100vw;max-width:100vw;height:auto;}" +
+                "</style>" +
+              "</head><body>" +
+                "<img src='" + imgData + "' alt='あなたのライフキャリアレインボー' />" +
+              "</body></html>"
+            );
+            win.document.close();
+          }
+        }
+      })
+      .catch(function (err) {
+        alert("レインボー図の画像作成中にエラーが発生しました。別のブラウザでもお試しください。");
+        console.error(err);
+        document.body.removeChild(captureContainer);
+      });
+  });
+}
+
+// 閉じるボタン
+if (rainbowCloseBtn) {
+  rainbowCloseBtn.addEventListener("click", function () {
+    rainbowOverlay.classList.add("hidden");
+  });
+}
+
+// 背景クリックでも閉じる
+if (rainbowOverlay) {
+  rainbowOverlay.addEventListener("click", function (e) {
+    if (e.target === rainbowOverlay) {
+      rainbowOverlay.classList.add("hidden");
+    }
+  });
+}
+
+// 画面リサイズ時に、オーバーレイが開いていれば再描画
+window.addEventListener("resize", function () {
+  if (!rainbowOverlay.classList.contains("hidden")) {
+    buildRainbowChart();
+  }
+});
+
+// 初期表示
+updateAges();
+updateSums();
+</script>
+</body>
+</html>
