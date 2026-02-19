@@ -29,6 +29,19 @@
   font-size: 0.7rem;
   font-weight: bold;
 }
+
+
+/* 注意書き用の見た目（任意） */
+.description-list li.description-note {
+  color: #777;
+  font-size: 0.85rem;
+}
+
+/* 注意書きには ● を付けない */
+.description-list li.description-note::before {
+  content: none;
+}
+
 /* ━━━━━━━━━━━━━━━━━━━━━━━
    列ハイライト（合計100％/オーバー）
    ━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -137,10 +150,8 @@ h1 {
       font-size: 0.85rem;
       color: #666;
     }
-/* レインボー図オーバーレイ内の説明文だけ少し大きく */
-#rainbow-overlay .note {
-  font-size: 0.95rem;  /* 0.85 → 0.95 相当。もっと大きくしたければ 1.0rem でもOK */
-}
+
+
   .table-wrapper {
   width: 100%;
   overflow-x: auto;               /* 横スクロールを許可 */
@@ -863,6 +874,17 @@ textarea.memo-input:focus {
   }
 }
 
+/* ★ レインボー図オーバーレイ：タイトル（強制上書き） */
+#rainbow-overlay .overlay-header h2 {
+  font-size: 1.75rem !important;
+  font-weight: 700 !important;
+}
+
+/* ★ レインボー図オーバーレイ：説明文（強制上書き） */
+#rainbow-overlay .note {
+  font-size: 1.05rem !important;
+}
+
   </style>
 </head>
 <body>
@@ -870,11 +892,11 @@ textarea.memo-input:focus {
     <h1>ライフキャリアレインボー<wbr>・ワークシート</h1>
 
 <ul class="description-list">
-  <li>現在の年齢を入れると、各時点の年齢が自動で表示されます。</li>
+  <li>現在の年齢を入れると、各時点の年齢が自動で表示されます。(空欄でもOK)</li>
   <li>各ライフロール(役割)の重要度(％)を入力してください。</li>
   <li>縦の列(20年前～理想)の合計がそれぞれ100％になるように調整します。</li>
   <li>メモ欄にはその時期のできごとやイメージを自由に書いてください。(空欄でもOK)</li>
-  <li>※データはこのブラウザ内だけで使われ、どこにも送信されません。</li>
+  <li class="description-note">※データはこのブラウザ内だけで使われ、どこにも送信されません。</li>
 </ul>
 
 <!-- ★ 新しい「小さなプロフィール枠」 -->
@@ -1382,21 +1404,23 @@ imageBtn.addEventListener("click", function () {
   document.body.appendChild(printContainer);
 
   const title = document.createElement("h1");
-const userName = getUserName();
+  const userName = getUserName();
 
-title.textContent = userName
-  ? userName + "のライフキャリアレインボー・ワークシート"
-  : "ライフキャリアレインボー・ワークシート";
+  title.textContent = userName
+    ? userName + "のライフキャリアレインボー・ワークシート"
+    : "ライフキャリアレインボー・ワークシート";
 
-title.style.textAlign = "center";
-title.style.color = "#3949ab";
-printContainer.appendChild(title);
+  title.style.textAlign = "center";
+  title.style.color = "#3949ab";
+  title.style.fontSize = "1.4rem";   // ★ ここでタイトルを少し小さめに
+  printContainer.appendChild(title);
 
   const h2 = document.createElement("h2");
-  h2.textContent = "ライフロール別の重要度の割合（％）";
+  h2.textContent = "ライフロール別の重要度の割合(％)";
   h2.style.textAlign = "center";
   h2.style.color = "#3949ab";
   h2.style.marginTop = "10px";
+  h2.style.fontSize = "1.0rem";      // ★ サブタイトルも控えめに
   printContainer.appendChild(h2);
 
   const printTable = document.createElement("table");
@@ -1414,33 +1438,46 @@ printContainer.appendChild(title);
     const newHeadRow = document.createElement("tr");
 
     for (let i = 0; i < origHeadRow.cells.length; i++) {
-      const cell = origHeadRow.cells[i];
-      const th = document.createElement("th");
+    const cell = origHeadRow.cells[i];
+    const th = document.createElement("th");
 
-      if (i === 0) {
-        // 1列目だけ、明示的に改行を入れる
-        th.innerHTML = "ライフロール<br>（役割）";
+    if (i === 0) {
+      // 1列目だけ、明示的に改行を入れる
+      th.innerHTML = "ライフロール<br>（役割）";
+    } else {
+
+      // 年齢の入力状態を確認
+      const ageNow = ageNowInput.value.trim();
+
+      // 時点セル（2列目〜6列目）は強制2行に整形する
+      if (i > 0 && i <= 5) {
+
+        if (!ageNow) {
+          // ★ 年齢が空欄の場合：固定テキストだけ
+          const labelsEmpty = ["20年前", "10年前", "現在", "10年後", "20年後"];
+          th.innerHTML = labelsEmpty[i - 1];
+        } else {
+          // ★ 年齢が入っている場合：これまで通り（タイトル＋（◯歳頃））
+          const parts = cell.textContent.trim().split("（");
+          const title = parts[0];                  // 「20年前」など
+          const age   = parts[1] ? "（" + parts[1] : "";  // 「（○歳頃）」部分
+
+          th.innerHTML = title + "<br>" + age;
+        }
+
       } else {
-
-// 時点セル（2列目〜6列目）は強制2行に整形する
-if (i > 0 && i <= 5) {  
-  const parts = cell.textContent.trim().split("（");
-  const title = parts[0];                  // 「20年前」
-  const age   = parts[1] ? "（" + parts[1] : "";  // 「（○歳頃）」
-
-  th.innerHTML = title + "<br>" + age;
-} else {
-  th.innerHTML = cell.innerHTML; // ライフロール列や理想列はそのまま
-}
-
+        // ライフロール列や理想列はそのまま
+        th.innerHTML = cell.innerHTML;
       }
-
-      th.style.border = "1px solid #ddd";
-      th.style.padding = "2px 4px";
-      th.style.backgroundColor = "#e8eaf6";
-      th.style.verticalAlign = "middle";
-      newHeadRow.appendChild(th);
     }
+
+    th.style.border = "1px solid #ddd";
+    th.style.padding = "2px 4px";
+    th.style.backgroundColor = "#e8eaf6";
+    th.style.verticalAlign = "middle";
+    newHeadRow.appendChild(th);
+  }
+
     newThead.appendChild(newHeadRow);
     printTable.appendChild(newThead);
   }
@@ -1646,23 +1683,26 @@ function getRoleNames() {
 // 20年前〜20年後の5点分のラベルとキー
 function getTimeInfosWithAge() {
   const now = parseFloat(ageNowInput.value);
+
+  // ★ 年齢が入っているとき：これまで通り「◯歳頃」表示
   if (!isNaN(now) && now > 0) {
     return [
-      { key: "t20ago", label: Math.max(now - 20, 0) + "歳頃" },
-      { key: "t10ago", label: Math.max(now - 10, 0) + "歳頃" },
-      { key: "now", label: "現在 " + now + "歳" },
+      { key: "t20ago",   label: Math.max(now - 20, 0) + "歳頃" },
+      { key: "t10ago",   label: Math.max(now - 10, 0) + "歳頃" },
+      { key: "now",      label: "現在 " + now + "歳" },
       { key: "t10after", label: now + 10 + "歳頃" },
       { key: "t20after", label: now + 20 + "歳頃" }
     ];
-  } else {
-    return [
-      { key: "t20ago", label: "−20年" },
-      { key: "t10ago", label: "−10年" },
-      { key: "now", label: "現在" },
-      { key: "t10after", label: "+10年" },
-      { key: "t20after", label: "+20年" }
-    ];
   }
+
+  // ★ 年齢が空欄のとき：固定テキスト（20年前〜20年後）
+  return [
+    { key: "t20ago",   label: "20年前" },
+    { key: "t10ago",   label: "10年前" },
+    { key: "now",      label: "現在" },
+    { key: "t10after", label: "10年後" },
+    { key: "t20after", label: "20年後" }
+  ];
 }
 
 // ===== 半円レインボー図（カスタム描画） =====
@@ -1847,7 +1887,7 @@ const centerY = outerR + marginTop;
   ctx.stroke();
 
 // --- 年齢ラベル（角度つき配置：半円に沿わせる） ---
-const labelFontPx = isMobile ? 12 : 16;
+const labelFontPx = isMobile ? 14 : 18;
 
 ctx.font =
   labelFontPx +
@@ -1901,7 +1941,7 @@ timeKeysForLabel.forEach((k, i) => {
 });
 
 // ★ フォント設定
-const roleFontPx = isMobile ? 11 : 14; 
+const roleFontPx = isMobile ? 12 : 15; 
 ctx.font =
   roleFontPx +
   "px system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
@@ -2042,12 +2082,13 @@ title.textContent = userNameForRainbow
 
 title.style.textAlign = "center";
 title.style.color = "#3949ab";
+title.style.fontSize = "1.8rem";   // ★ ここを追加（1.6〜1.8くらいで調整可）
 captureContainer.appendChild(title);
 
     // 説明（元の note と揃える）
     const note = document.createElement("p");
-    note.textContent = "各時点の重要度の割合を色の帯で表現しています。";
-    note.style.fontSize = "0.85rem";
+    note.textContent = "各時点のライフロールの割合を帯の幅で表現しています。";
+    note.style.fontSize = "1.15rem";   // ★ ここを 0.85 → 1.15 に変更
     note.style.color = "#666";
     note.style.textAlign = "center";
     note.style.marginTop = "4px";
